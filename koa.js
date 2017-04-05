@@ -12,7 +12,7 @@ app.use(async function (ctx, next) {
   ctx.onerror = err => { if (err) throw err }
 
   // koa sets res.statusCode to 404 automatically, so first, undo that
-  // (you need to bypass ctx because it does a check for valid status code)
+  // (you need to bypass ctx because its setter does a validity check)
   ctx.res.statusCode = null;
   await next()
 
@@ -20,22 +20,23 @@ app.use(async function (ctx, next) {
   // not to respond to this request
   if (ctx.status == null) {
     ctx.respond = false;
-    // reset the status to its initial value
+    // reset the status to its initial value, otherwise downstream handlers will
+    // fail unless they explicitly set status
     ctx.status = 200;
   }
 });
 
-app.use(r.get("/hello", async ctx => {
+app.use(r.get("/koa/hello", async ctx => {
   ctx.status = 200;
   ctx.body = { hello: "koa" };
 }));
 
-app.use(r.get("/not_found", async ctx => {
+app.use(r.get("/koa/not_found", async ctx => {
   ctx.status = 404;
   ctx.body = { error: "not found" };
 }));
 
-app.use(r.get("/throw_error", async ctx => {
+app.use(r.get("/koa/throw_error", async ctx => {
   throw new Error("Kaboom!");
 }));
 

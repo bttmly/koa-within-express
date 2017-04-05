@@ -9,7 +9,7 @@ app.get("/express/hello", function(req, res) {
   res.json({ hello: "express" })
 });
 
-app.use("/koa", require("./koa"))
+app.use(require("./koa"));
 
 app.get("/express/hello_again", function(req, res) {
   res.json({ hello_again: "express" })
